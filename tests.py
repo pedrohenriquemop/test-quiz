@@ -153,3 +153,25 @@ def test_correct_selected_choices_with_more_than_max_selections():
 
     with pytest.raises(Exception):
         question.correct_selected_choices([choice1.id, choice3.id])
+
+
+@pytest.fixture
+def sample_question():
+    question = Question(title="q1", points=10, max_selections=3)
+    question.add_choice("a", True)
+    question.add_choice("b", False)
+    question.add_choice("c", True)
+    return question
+
+
+def test_sample_question_has_uuid_id(sample_question):
+    assert len(sample_question.id) == 32
+
+
+def test_sample_question_select_all_questions(sample_question):
+    correct_choices = sample_question.correct_selected_choices(
+        [choice.id for choice in sample_question.choices]
+    )
+    assert set(correct_choices) == set(
+        choice.id for choice in sample_question.choices if choice.is_correct
+    )
